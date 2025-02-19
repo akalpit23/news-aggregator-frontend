@@ -15,37 +15,42 @@ const ProfilePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  console.log('ProfilePage render: token =', token);
+  console.log('Component rendered with states:', { loading, error, profile });  // Add this at the top
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        console.log('Fetching profile with token:', token);
         const response = await fetch('http://localhost:5001/api/user/profile', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
-        console.log('Profile response status:', response.status);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch profile');
         }
+        
         const data = await response.json();
-        console.log('Fetched profile data:', data);
+        console.log('Received profile data:', data);  // Modified log
         setProfile(data);
+        console.log('Profile state updated');  // New log
+        setLoading(false);
+        console.log('Loading state updated');  // New log
       } catch (err: any) {
-        console.error('Error fetching profile:', err);
         setError(err.message);
-      } finally {
         setLoading(false);
       }
     };
 
     if (token) {
       fetchProfile();
+    } else {
+      setLoading(false);
     }
   }, [token]);
+
+  console.log('Before conditional renders:', { loading, error, profile });  // Add this line
 
   if (loading) {
     console.log('ProfilePage loading...');
@@ -60,9 +65,15 @@ const ProfilePage: React.FC = () => {
     return <div className="text-white p-4">No profile data available.</div>;
   }
 
+  console.log('Passed all conditions, about to render profile:', profile);  // Add this line
+  // This log is executed on every render when profile is not null.
   console.log('ProfilePage rendering profile:', profile);
+
+  // Add this log right before the return
+  console.log('About to render profile component with data:', profile);
+
   return (
-    <div className="p-4">
+    <div className="p-4 bg-gray-800"> {/* Added background color */}
       <h2 className="text-2xl text-white mb-4">User Profile</h2>
       <p className="text-white">Username: {profile.username}</p>
       <p className="text-white">Email: {profile.email}</p>
