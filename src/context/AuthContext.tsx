@@ -39,11 +39,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
+      console.log("Login response status:", response.status);
       if (!response.ok) {
         throw new Error('Login failed');
       }
       const data = await response.json();
-      const jwtToken = data.token; // assume backend returns { token, user }
+      console.log("Login response data:", data);
+      const jwtToken = data.token; 
       localStorage.setItem('jwt_token', jwtToken);
       setToken(jwtToken);
       setUser(data.user);
